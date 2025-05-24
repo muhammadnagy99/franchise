@@ -1,231 +1,320 @@
-'use client';
+'use client'
 
-import React from 'react';
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, LabelList
-} from 'recharts';
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from "recharts";
+import { motion } from "framer-motion";
 
-const COLORS = ['#23314c', '#6e62a3', '#23314c'];
+// Type definitions
+interface KPI {
+  label: string;
+  value: string;
+}
 
-export default function FranchiseDashboard() {
-  const complianceScoresData = [
-    { name: 'Food Quality', score: 91 },
-    { name: 'Kitchen Perf.', score: 89 },
-    { name: 'Loyalty Program', score: 75 },
-    { name: 'Operational Comp.', score: 93 },
+interface RefundData {
+  branch: string;
+  refund: number;
+}
+
+interface ProfitData {
+  branch: string;
+  profit: number;
+}
+
+interface RevenueData {
+  branch: string;
+  revenue: number;
+}
+
+interface RevenueAllocationData {
+  branch: string;
+  company1: number;
+  company2: number;
+}
+
+interface PrepTimeData {
+  name: string;
+  DineIn: number;
+  Delivery: number;
+  Pickup: number;
+}
+
+interface ComplianceScore {
+  label: string;
+  value: number;
+}
+
+interface BranchOverview {
+  name: string;
+  sales: string;
+  rating: number;
+  compliance: string;
+  tag: string;
+}
+
+const Dashboard: React.FC = () => {
+  const overviewKPIs: KPI[] = [
+    { label: "Sales MTD", value: "SAR 94,235" },
+    { label: "Sales YTD", value: "SAR 1,002,113" },
+    { label: "Avg Recipe Compliance", value: "91.6%" },
+    { label: "Avg Prep Time", value: "11:42 mins" },
+    { label: "Royalty Collection", value: "SAR 14,020" },
+    { label: "Refund Rate", value: "1.2%" },
+    { label: "Net Profit Margin", value: "18.6%" },
+    { label: "Operating Expenses", value: "SAR 152,000" },
+    { label: "Average Order Value", value: "SAR 54.30" },
   ];
 
-  const avgPrepTimeByOrderType = [
-    { name: 'Dine-in', time: 11 },
-    { name: 'Pickup', time: 9 },
-    { name: 'Delivery', time: 14 },
+  const refundByBranch: RefundData[] = [
+    { branch: "Al Malaz", refund: 1.1 },
+    { branch: "Olaya", refund: 1.3 },
+    { branch: "Al Nakheel", refund: 1.2 },
   ];
 
-  const orderVolumeTrends = [
-    { day: 'Mon', orders: 120 },
-    { day: 'Tue', orders: 150 },
-    { day: 'Wed', orders: 100 },
+  const netProfitByBranch: ProfitData[] = [
+    { branch: "Al Malaz", profit: 19.0 },
+    { branch: "Olaya", profit: 17.8 },
+    { branch: "Al Nakheel", profit: 20.2 },
   ];
 
-  const revenueByBranch = [
-    { name: 'Branch 1', revenue: 300000 },
-    { name: 'Branch 2', revenue: 270000 },
-    { name: 'Branch 3', revenue: 280000 },
+  const revenueByBranch: RevenueData[] = [
+    { branch: "Al Malaz", revenue: 300000 },
+    { branch: "Olaya", revenue: 225000 },
+    { branch: "Al Nakheel", revenue: 275000 },
   ];
 
-  const recipeCompliance = [
-    { name: 'Branch 1', compliance: 90 },
-    { name: 'Branch 2', compliance: 85 },
-    { name: 'Branch 3', compliance: 88 },
+  const revenueAllocation: RevenueAllocationData[] = [
+    { branch: "Al Malaz", company1: 240000, company2: 60000 },
+    { branch: "Olaya", company1: 180000, company2: 45000 },
+    { branch: "Al Nakheel", company1: 220000, company2: 55000 },
   ];
 
-  const kpis = [
-    { title: "Total Sales (MTD / YTD)", value: "SAR 850,000 / SAR 5.2M" },
-    { title: "Avg Recipe Compliance", value: "88%" },
-    { title: "Avg Prep Time", value: "12 min" },
-    { title: "Royalty Collection", value: "78%" },
+  const inventoryKPIs: KPI[] = [
+    { label: "Waste %", value: "2.4%" },
+    { label: "Expired Inventory Loss", value: "SAR 3,240" },
+    { label: "Recipe Compliance per Branch", value: "88% - 93%" },
+    { label: "Stock Turnover Rate", value: "4.3" },
+    { label: "Low Stock Alerts", value: "12 items" },
+    { label: "Out-of-Stock Items", value: "4 items" },
+    { label: "Ingredient Variance", value: "5 flagged" },
   ];
 
-  const operationalHealthMetrics = [
-    { label: "Order Accuracy Rate", value: "96%" },
-    { label: "Delayed Orders", value: "2.1%" },
-    { label: "Table Turnover Rate", value: "4.3/hr" },
+  const avgPrepTimeByBranch: PrepTimeData[] = [
+    { name: "Al Malaz", DineIn: 12, Delivery: 14, Pickup: 10 },
+    { name: "Olaya", DineIn: 11, Delivery: 13, Pickup: 9 },
+    { name: "Al Nakheel", DineIn: 10, Delivery: 12, Pickup: 8 },
   ];
 
-  const inventoryMetrics = [
-    { label: "Low Stock Alerts", value: "3 items" },
-    { label: "Waste %", value: "4.5%" },
-    { label: "Expired Inventory Loss", value: "SAR 1,200" },
+  const operationalKPIs: KPI[] = [
+    { label: "Order Accuracy Rate", value: "96.3%" },
+    { label: "Delayed Orders", value: "12" },
+    { label: "Table Turnover Rate", value: "4.6" },
   ];
 
-  const branches = [
-    {
-      name: 'Branch 1',
-      revenue: 'SAR 300,000',
-      compliance: '90%',
-      avgPrepTime: '11 min',
-      alerts: '1'
-    },
-    {
-      name: 'Branch 2',
-      revenue: 'SAR 270,000',
-      compliance: '85%',
-      avgPrepTime: '13 min',
-      alerts: '0'
-    },
-    {
-      name: 'Branch 3',
-      revenue: 'SAR 280,000',
-      compliance: '88%',
-      avgPrepTime: '12 min',
-      alerts: '2'
-    }
+  const complianceScores: ComplianceScore[] = [
+    { label: "Food Quality", value: 82 },
+    { label: "Kitchen Performance", value: 89 },
+    { label: "Operational Compliance", value: 86 },
+    { label: "Loyalty Program", value: 73 },
+    { label: "Google Maps Reviews", value: 91 },
   ];
+
+  const branchesOverview: BranchOverview[] = [
+    { name: "Al Malaz", sales: "SAR 25,020", rating: 4.3, compliance: "92%", tag: "High Performer" },
+    { name: "Olaya", sales: "SAR 18,340", rating: 4.6, compliance: "88%", tag: "Stable" },
+    { name: "Al Nakheel", sales: "SAR 32,710", rating: 4.5, compliance: "91%", tag: "Focus Area" },
+  ];
+
+  const getStatusLabel = (score: number): string => {
+    if (score < 75) return "Not compliant";
+    if (score >= 75 && score < 85) return "Partially compliant";
+    return "Compliant";
+  };
+
+  const getStatusColor = (score: number): string => {
+    if (score < 75) return "bg-red-500";
+    if (score >= 75 && score < 85) return "bg-yellow-500";
+    return "bg-green-500";
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 space-y-10">
-      <h1 className="text-3xl font-semibold mb-6">Franchise Dashboard</h1>
-
-      {/* A. Overview & KPIs Section */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Overview & KPIs</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpis.map((kpi) => (
-            <Card key={kpi.title} className="shadow-md">
+    <div className="grid gap-10 p-4 md:p-8 w-full">
+      {/* Overview Section */}
+      <section className="grid gap-4">
+        <motion.h2 className="text-xl font-semibold">📊 Overview & KPIs</motion.h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {overviewKPIs.map((kpi: KPI, idx: number) => (
+            <Card key={idx} className="shadow-md">
               <CardContent className="p-4">
-                <h3 className="text-sm text-gray-500">{kpi.title}</h3>
-                <p className="text-xl font-semibold">{kpi.value}</p>
+                <p className="text-sm text-muted-foreground mb-1">{kpi.label}</p>
+                <p className="text-xl font-bold">{kpi.value}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* B. Operational Health Section */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Operational Health</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {operationalHealthMetrics.map(metric => (
-            <Card key={metric.label} className="shadow-md">
-              <CardContent>{metric.label}: {metric.value}</CardContent>
+      {/* Operational Health */}
+      <section className="grid gap-4">
+        <motion.h2 className="text-xl font-semibold">⚙️ Operational Health</motion.h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {operationalKPIs.map((item: KPI, idx: number) => (
+            <Card key={idx} className="shadow">
+              <CardContent className="p-4">
+                <p className="text-sm text-muted-foreground mb-1">{item.label}</p>
+                <p className="text-xl font-bold">{item.value}</p>
+              </CardContent>
             </Card>
           ))}
         </div>
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="shadow-md">
-            <CardContent>
-              <h3 className="font-medium mb-2">Avg Prep Time by Order Type</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={avgPrepTimeByOrderType}>
-                  <XAxis dataKey="name" /><YAxis /><Tooltip />
-                  <Bar dataKey="time" fill={COLORS[0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card className="shadow-md">
-            <CardContent>
-              <h3 className="font-medium mb-2">Order Volume Trends</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={orderVolumeTrends}>
-                  <XAxis dataKey="day" /><YAxis /><Tooltip />
-                  <Line type="monotone" dataKey="orders" stroke={COLORS[1]} />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* C. Financial Performance Section */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Financial Performance</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="shadow-md">
-            <CardContent>
-              <h3 className="font-medium mb-2">Revenue by Branch</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={revenueByBranch}>
-                  <XAxis dataKey="name" /><YAxis /><Tooltip />
-                  <Bar dataKey="revenue" fill={COLORS[2]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card className="shadow-md">
-            <CardContent>
-              <p>Refund Rate: 1.2%</p>
-              <p>Royalty Compliance: 92%</p>
-              <p>Net Profit Margin: 18.6%</p>
-              <p>Operating Expenses: SAR 152,000</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* D. Inventory & Recipe Control Section */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Inventory & Recipe Control</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {inventoryMetrics.map(item => (
-            <Card key={item.label} className="shadow-md">
-              <CardContent>{item.label}: {item.value}</CardContent>
-            </Card>
-          ))}
-        </div>
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="shadow-md">
-            <CardContent>
-              <h3 className="font-medium mb-2">Recipe Compliance %</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={recipeCompliance}>
-                  <XAxis dataKey="name" /><YAxis /><Tooltip />
-                  <Bar dataKey="compliance" fill={COLORS[1]}>
-                    <LabelList dataKey="compliance" position="insideTop" fill="#fff" />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card className="shadow-md">
-            <CardContent>Ingredient Variance Report Available</CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* E. Compliance Section */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Compliance & Scores</h2>
-        <Card className="shadow-md">
-          <CardContent>
+        <Card className="shadow">
+          <CardContent className="p-4">
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={complianceScoresData}>
+              <BarChart data={avgPrepTimeByBranch}>
                 <XAxis dataKey="name" />
-                <YAxis domain={[0, 100]} />
+                <YAxis />
                 <Tooltip />
-                <Bar dataKey="score" fill={COLORS[0]}>
-                  <LabelList dataKey="score" position="insideTop" fill="#fff" />
-                </Bar>
+                <Legend />
+                <Bar dataKey="DineIn" stackId="a" fill="#23314c" name="Dine-in" />
+                <Bar dataKey="Delivery" stackId="a" fill="#6e62a3" name="Delivery" />
+                <Bar dataKey="Pickup" stackId="a" fill="#999" name="Pickup" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </section>
 
-      {/* F. Branch Overview */}
-      <section>
-        <h2 className="text-xl font-bold mb-4">Branches Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {branches.map(branch => (
-            <Card key={branch.name} className="shadow-md">
-              <CardContent className="space-y-2">
-                <h3 className="text-lg font-semibold">{branch.name}</h3>
-                <p>Revenue: {branch.revenue}</p>
-                <p>Recipe Compliance: {branch.compliance}</p>
-                <p>Avg Prep Time: {branch.avgPrepTime}</p>
-                <p>Open Alerts: {branch.alerts}</p>
+      {/* Financial Performance */}
+      <section className="grid gap-4">
+        <motion.h2 className="text-xl font-semibold">💰 Financial Performance</motion.h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="shadow">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-2">Revenue by Branch (SAR)</p>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={revenueByBranch}>
+                  <XAxis dataKey="branch" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="revenue" fill="#23314c" name="Total Revenue" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-2">Revenue Allocation</p>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={revenueAllocation}>
+                  <XAxis dataKey="branch" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="company1" stackId="a" fill="#23314c" name="Company 1" />
+                  <Bar dataKey="company2" stackId="a" fill="#6e62a3" name="Company 2" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="shadow">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-2">Refund Rate by Branch</p>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={refundByBranch}>
+                  <XAxis dataKey="branch" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="refund" fill="#f59e0b" name="Refund Rate (%)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium mb-2">Net Profit Margin by Branch</p>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={netProfitByBranch}>
+                  <XAxis dataKey="branch" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="profit" fill="#10b981" name="Net Profit (%)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Inventory & Recipe Control */}
+      <section className="grid gap-4">
+        <motion.h2 className="text-xl font-semibold">📦 Inventory & Recipe Control</motion.h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {inventoryKPIs.map((item: KPI, idx: number) => (
+            <Card key={idx} className="shadow">
+              <CardContent className="p-4">
+                <p className="text-muted-foreground text-sm mb-1">{item.label}</p>
+                <p className="text-xl font-bold">{item.value}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Compliance & Scores */}
+      <section className="grid gap-4">
+        <motion.h2 className="text-xl font-semibold">✅ Compliance & Scores</motion.h2>
+        <Card className="shadow">
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              {complianceScores.map((score: ComplianceScore, idx: number) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <p className="text-sm w-40">{score.label}</p>
+                  <div className="w-full h-2 bg-muted rounded-full mx-4 relative">
+                    <div className={`h-2 ${getStatusColor(score.value)} rounded-full`} style={{ width: `${score.value}%` }} />
+                    <span className="absolute -top-5 right-0 text-xs text-muted-foreground">
+                      {getStatusLabel(score.value)}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium w-8 text-right">{score.value}%</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Branches Overview */}
+      <section className="grid gap-4">
+        <motion.h2 className="text-xl font-semibold">🏪 Branches Overview</motion.h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {branchesOverview.map((branch: BranchOverview, idx: number) => (
+            <Card key={idx} className="border border-muted shadow-sm hover:shadow-md transition">
+              <CardContent className="p-4 space-y-1">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">{branch.name}</h3>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                    {branch.tag}
+                  </span>
+                </div>
+                <p className="text-sm">Sales: {branch.sales}</p>
+                <p className="text-sm">Rating: {branch.rating} ⭐</p>
+                <p className="text-sm">Compliance: {branch.compliance}</p>
               </CardContent>
             </Card>
           ))}
@@ -233,4 +322,6 @@ export default function FranchiseDashboard() {
       </section>
     </div>
   );
-}
+};
+
+export default Dashboard;

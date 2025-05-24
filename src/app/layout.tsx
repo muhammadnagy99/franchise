@@ -17,10 +17,9 @@ export default function RootLayout({
       <body
         className={`flex justify-center`}
       >
-        <main className="flex items-center max-w-[1200px]">
-
+        <main className="flex items-center max-w-[1200px] w-full">
+          {children}
         </main>
-        {children}
       </body>
     </html>
   );
